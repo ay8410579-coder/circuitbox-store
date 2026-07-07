@@ -367,4 +367,105 @@ export default function ElectroStore() {
       {/* Auth modal */}
       {authOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setAuthOpen(f
+<div className="bg-[#12151C] border border-[#232838] rounded-2xl max-w-sm w-full p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="font-display text-lg font-600">{authMode === "login" ? "Sign in" : "Create account"}</h3>
+              <button onClick={() => setAuthOpen(false)} className="text-[#5C6478] hover:text-white"><X size={18} /></button>
+            </div>
+            <form onSubmit={submitAuth} className="flex flex-col gap-3">
+              {authMode === "signup" && (
+                <input name="name" required placeholder="Full name" className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              )}
+              <input name="email" type="email" required placeholder="Email address" className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              <input name="password" type="password" required placeholder="Password" minLength={4} className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              <button type="submit" className="mt-1 py-2.5 bg-[#2954E5] hover:bg-[#2247C9] rounded-lg text-sm font-medium transition-colors">
+                {authMode === "login" ? "Sign in" : "Create account"}
+              </button>
+            </form>
+            <div className="text-center text-xs text-[#5C6478] mt-4">
+              {authMode === "login" ? "New here? " : "Already have an account? "}
+              <button onClick={() => setAuthMode(authMode === "login" ? "signup" : "login")} className="text-[#2954E5] hover:underline">
+                {authMode === "login" ? "Create account" : "Sign in"}
+              </button>
+            </div>
+            <div className="text-center text-[10px] text-[#5C6478] mt-3 font-mono">Demo auth — no real account is created.</div>
+          </div>
+        </div>
+      )}
+
+      {/* Checkout: address */}
+      {checkoutStep === "address" && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[#12151C] border border-[#232838] rounded-2xl max-w-md w-full p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <MapPin size={16} color="#2954E5" />
+              <h3 className="font-display text-lg font-600">Delivery address</h3>
+            </div>
+            <form onSubmit={submitAddress} className="flex flex-col gap-3">
+              <input required value={address.name} onChange={e => setAddress(a => ({ ...a, name: e.target.value }))} placeholder="Full name" className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              <input required value={address.line1} onChange={e => setAddress(a => ({ ...a, line1: e.target.value }))} placeholder="Address line" className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              <div className="flex gap-3">
+                <input required value={address.city} onChange={e => setAddress(a => ({ ...a, city: e.target.value }))} placeholder="City" className="flex-1 bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+                <input required value={address.pin} onChange={e => setAddress(a => ({ ...a, pin: e.target.value }))} placeholder="PIN code" className="w-28 bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              </div>
+              <input required value={address.phone} onChange={e => setAddress(a => ({ ...a, phone: e.target.value }))} placeholder="Phone number" className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              <div className="flex gap-3 mt-2">
+                <button type="button" onClick={() => setCheckoutStep(null)} className="flex items-center gap-1 px-4 py-2.5 rounded-lg border border-[#232838] text-sm hover:bg-[#151822]"><ArrowLeft size={14} /> Back</button>
+                <button type="submit" className="flex-1 py-2.5 bg-[#2954E5] hover:bg-[#2247C9] rounded-lg text-sm font-medium">Continue to payment</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Checkout: payment */}
+      {checkoutStep === "payment" && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[#12151C] border border-[#232838] rounded-2xl max-w-md w-full p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <CreditCard size={16} color="#2954E5" />
+              <h3 className="font-display text-lg font-600">Payment</h3>
+            </div>
+            <div className="bg-[#151822] rounded-lg p-3 mb-4 font-mono text-xs text-[#8B93A7] flex justify-between">
+              <span>Order total</span><span className="text-[#E7E9EE] font-medium">{inr(total)}</span>
+            </div>
+            <form onSubmit={submitPayment} className="flex flex-col gap-3">
+              <input required placeholder="Card number" maxLength={19} className="bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              <div className="flex gap-3">
+                <input required placeholder="MM/YY" className="flex-1 bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+                <input required placeholder="CVV" maxLength={3} className="w-24 bg-[#151822] border border-[#232838] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2954E5]" />
+              </div>
+              <div className="flex gap-3 mt-2">
+                <button type="button" onClick={() => setCheckoutStep("address")} className="flex items-center gap-1 px-4 py-2.5 rounded-lg border border-[#232838] text-sm hover:bg-[#151822]"><ArrowLeft size={14} /> Back</button>
+                <button type="submit" disabled={paying} className="flex-1 py-2.5 bg-[#2954E5] hover:bg-[#2247C9] disabled:opacity-60 rounded-lg text-sm font-medium">
+                  {paying ? "Processing…" : `Pay ${inr(total)}`}
+                </button>
+              </div>
+            </form>
+            <div className="text-center text-[10px] text-[#5C6478] mt-4 font-mono">
+              Simulated payment — no real gateway is connected. Wire this to Razorpay/Stripe on your backend to go live.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Checkout: success */}
+      {checkoutStep === "success" && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[#12151C] border border-[#232838] rounded-2xl max-w-sm w-full p-8 text-center">
+            <div className="w-12 h-12 rounded-full bg-[#3DDC97]/15 flex items-center justify-center mx-auto mb-4">
+              <Check size={22} color="#3DDC97" />
+            </div>
+            <h3 className="font-display text-lg font-600 mb-1">Order placed</h3>
+            <p className="text-sm text-[#8B93A7] mb-6">Confirmation sent to your email. This is a demo order — no real charge was made.</p>
+            <button onClick={() => setCheckoutStep(null)} className="w-full py-2.5 bg-[#2954E5] hover:bg-[#2247C9] rounded-lg text-sm font-medium">
+              Continue shopping
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+                }
+      
 
