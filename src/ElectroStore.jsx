@@ -366,7 +366,7 @@ export default function ElectroStore() {
 
       {/* Auth modal */}
       {authOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setAuthOpen(f
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setAuthOpen(false)}> 
 <div className="bg-[#12151C] border border-[#232838] rounded-2xl max-w-sm w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-5">
               <h3 className="font-display text-lg font-600">{authMode === "login" ? "Sign in" : "Create account"}</h3>
