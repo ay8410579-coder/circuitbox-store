@@ -138,6 +138,8 @@ export default function App() {
   async function submitPayment(e) {
     e.preventDefault();
     setPaying(true);
+    const form = new FormData(e.target);
+    const method = form.get("method") || "cod";
     try {
       for (const item of cartItems) {
         await createOrder({
@@ -151,6 +153,7 @@ export default function App() {
           address_city: address.city,
           address_pin: address.pin,
           address_phone: address.phone,
+          payment_method: method,
         });
       }
       setCheckoutStep("success");
@@ -159,8 +162,8 @@ export default function App() {
       alert("Order failed: " + err.message);
     }
     setPaying(false);
-    }
-  return (
+  }
+return (
     <div className="min-h-screen bg-[#0B0D12] text-[#E7E9EE]" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
