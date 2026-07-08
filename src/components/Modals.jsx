@@ -72,6 +72,7 @@ export function SellModal({ onSubmit, onClose, error, loading }) {
     </div>
   );
 }
+
 export function CartDrawer({ items, subtotal, shipping, total, onClose, onUpdateQty, onRemove, onCheckout }) {
   return (
     <div className="fixed inset-0 z-40 bg-black/60 flex justify-end" onClick={onClose}>
@@ -118,7 +119,6 @@ export function CartDrawer({ items, subtotal, shipping, total, onClose, onUpdate
     </div>
   );
 }
-
 export function CheckoutModal({ step, total, onAddress, onPayment, onBackToAddress, onBackToCart, onClose, paying }) {
   if (step === "success") {
     return (
@@ -128,7 +128,7 @@ export function CheckoutModal({ step, total, onAddress, onPayment, onBackToAddre
             <Check size={22} color="#3DDC97" />
           </div>
           <h3 className="font-display text-lg font-600 mb-1 text-[#E7E9EE]">Order placed</h3>
-          <p className="text-sm text-[#8B93A7] mb-6">Your order has been saved. This is a demo payment — no real charge was made.</p>
+          <p className="text-sm text-[#8B93A7] mb-6">Your order has been saved. Card payments are simulated — no real charge was made.</p>
           <button onClick={onClose} className="w-full py-2.5 bg-[#2954E5] hover:bg-[#2247C9] rounded-lg text-sm font-medium text-white">
             Continue shopping
           </button>
@@ -167,27 +167,56 @@ export function CheckoutModal({ step, total, onAddress, onPayment, onBackToAddre
         <div className="bg-[#12151C] border border-[#232838] rounded-2xl max-w-md w-full p-6">
           <div className="flex items-center gap-2 mb-5">
             <CreditCard size={16} color="#2954E5" />
-            <h3 className="font-display text-lg font-600 text-[#E7E9EE]">Payment</h3>
+            <h3 className="font-display text-lg font-600 text-[#E7E9EE]">Payment method</h3>
           </div>
           <div className="bg-[#151822] rounded-lg p-3 mb-4 font-mono text-xs text-[#8B93A7] flex justify-between">
             <span>Order total</span><span className="text-[#E7E9EE] font-medium">{inr(total)}</span>
           </div>
-          <form onSubmit={onPayment} className="flex flex-col gap-3">
-            <input required placeholder="Card number" maxLength={19} className={inputCls} />
-            <div className="flex gap-3">
-              <input required placeholder="MM/YY" className={`flex-1 ${inputCls}`} />
-              <input required placeholder="CVV" maxLength={3} className={`w-24 ${inputCls}`} />
-            </div>
-            <div className="flex gap-3 mt-2">
-              <button type="button" onClick={onBackToAddress} className="flex items-center gap-1 px-4 py-2.5 rounded-lg border border-[#232838] text-sm hover:bg-[#151822] text-[#E7E9EE]"><ArrowLeft size={14} /> Back</button>
-              <button type="submit" disabled={paying} className="flex-1 py-2.5 bg-[#2954E5] hover:bg-[#2247C9] disabled:opacity-60 rounded-lg text-sm font-medium text-white">
-                {paying ? "Processing…" : `Pay ${inr(total)}`}
-              </button>
-            </div>
-          </form>
+          <PaymentForm onPayment={onPayment} onBackToAddress={onBackToAddress} paying={paying} total={total} />
         </div>
       </div>
     );
   }
   return null;
-                      }
+}
+
+function PaymentForm({ onPayment, onBackToAddress, paying, total }) {
+  const [method, setMethod] = useState("cod");
+  return (
+    <form onSubmit={onPayment} className="flex flex-col gap-3">
+      <input type="hidden" name="method" value={method} />
+      <div className="flex flex-col gap-2">
+        <label className={`flex items-center gap-3 border rounded-lg p-3 cursor-pointer ${method === "cod" ? "border-[#2954E5] bg-[#2954E5]/10" : "border-[#232838]"}`}>
+          <input type="radio" checked={method === "cod"} onChange={() => setMethod("cod")} />
+          <div>
+            <div className="text-sm font-medium text-[#E7E9EE]">💵 Cash on Delivery</div>
+            <div className="text-xs text-[#8B93A7]">Pay with cash when your order arrives.</div>
+          </div>
+        </label>
+        <label className={`flex items-center gap-3 border rounded-lg p-3 cursor-pointer ${method === "card" ? "border-[#2954E5] bg-[#2954E5]/10" : "border-[#232838]"}`}>
+          <input type="radio" checked={method === "card"} onChange={() => setMethod("card")} />
+          <div>
+            <div className="text-sm font-medium text-[#E7E9EE]">💳 Credit / Debit Card</div>
+            <div className="text-xs text-[#8B93A7]">Pay online now (simulated).</div>
+          </div>
+        </label>
+      </div>
+      {method === "card" && (
+        <>
+          <input name="cardNumber" required placeholder="Card number" maxLength={19} className={inputCls} />
+          <div className="flex gap-3">
+            <input name="expiry" required placeholder="MM/YY" className={`flex-1 ${inputCls}`} />
+            <input name="cvv" required placeholder="CVV" maxLength={3} className={`w-24 ${inputCls}`} />
+          </div>
+        </>
+      )}
+      <div className="flex gap-3 mt-2">
+        <button type="button" onClick={onBackToAddress} className="flex items-center gap-1 px-4 py-2.5 rounded-lg border border-[#232838] text-sm hover:bg-[#151822] text-[#E7E9EE]"><ArrowLeft size={14} /> Back</button>
+        <button type="submit" disabled={paying} className="flex-1 py-2.5 bg-[#2954E5] hover:bg-[#2247C9] disabled:opacity-60 rounded-lg text-sm font-medium text-white">
+          {paying ? "Placing order…" : method === "cod" ? `Confirm order · ${inr(total)}` : `Pay ${inr(total)}`}
+        </button>
+      </div>
+    </form>
+  );
+        }
+
